@@ -1,6 +1,5 @@
 package com.heaven.Recommandation.model;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,21 +7,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.heaven.Recommandation.MainActivity;
 import com.heaven.Recommandation.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.concurrent.Callable;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by Zion on 15/10/15.
  */
-public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingHolder> implements Callable<ActiveListings>{
+public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingHolder> implements Callback<ActiveListings>{
 
     private LayoutInflater mLayoutInflater;
-    private ActiveListings mActiveListings;
-
-    public ListingAdapter(Context context){
-        mLayoutInflater = LayoutInflater.from(context);
+    private ActiveListings activeListings;
+    private MainActivity activity;
+    public ListingAdapter(MainActivity activity){
+        this.activity = activity;
+        mLayoutInflater = LayoutInflater.from(activity);
     }
     @Override
     public ListingHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -31,7 +34,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
 
     @Override
     public void onBindViewHolder(ListingHolder holder, int position) {
-        final Listing listing = mActiveListings.results[position];
+        final Listing listing = activeListings.results[position];
         holder.mTitleView.setText(listing.title);
         holder.mPriceView.setText(listing.price);
         holder.mShopNameView.setText((CharSequence) listing.Shop);
@@ -43,17 +46,26 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
 
     @Override
     public int getItemCount() {
-        if (mActiveListings == null)
+        if (activeListings == null)
         return 0;
 
-        if (mActiveListings.results == null)
+        if (activeListings.results == null)
             return 0;
-        return mActiveListings.results.length;
+        return activeListings.results.length;
+    }
+    @Override
+    public void success(ActiveListings activeListings, Response response) {
+        this.activeListings = activeListings;
+        notifyDataSetChanged();
+        this.activity.showList();
+    }
+    @Override
+    public void failure(RetrofitError error){
+        this.activity.showError();
     }
 
-    @Override
-    public ActiveListings call() throws Exception {
-        return null;
+    public ActiveListings getActiveListing(){
+        return activeListings;
     }
 
 

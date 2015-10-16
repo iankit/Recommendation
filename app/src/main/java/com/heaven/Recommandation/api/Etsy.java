@@ -1,8 +1,8 @@
 package com.heaven.Recommandation.api;
 
 import com.heaven.Recommandation.model.ActiveListings;
-import com.heaven.Recommandation.model.ListingAdapter;
 
+import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
@@ -28,7 +28,7 @@ public class Etsy {
                 .build()
                 .create(Api.class);
     }
-    public static void getActiveListing(ListingAdapter callback){
-        getApi().activeListings("Images,Shop", (retrofit.Callback<ActiveListings>) callback);
+    public static void getActiveListing(Callback<ActiveListings> callback){
+        getApi().activeListings("Images,Shop",callback);
     }
 }
